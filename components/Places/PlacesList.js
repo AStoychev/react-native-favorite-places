@@ -2,12 +2,14 @@ import { View, Text, FlatList, StyleSheet } from "react-native";
 
 import PlaceItem from "./PlaceItem";
 
+import { Colors } from "../../constants/colors";
+
 function PlacesList({ places }) {
     if (!places || places.length === 0) {
         return (
             <View style={styles.fallbackContainer}>
                 <Text style={styles.fallbackText}>
-                    No places addded yet - start adding some!
+                    No places added yet - start adding some!
                 </Text>
             </View>
         )
@@ -31,6 +33,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     fallbackText: {
-        fontSize: 16
+        fontSize: 16,
+        color: Colors.primary200
     }
 })
