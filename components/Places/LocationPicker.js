@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useState, useEffect } from "react";
+import { useNavigation, useRoute, useIsFocused } from "@react-navigation/native";
 import { Text, View, Image, Alert, StyleSheet } from "react-native";
 import { getCurrentPositionAsync, useForegroundPermissions, PermissionStatus } from "expo-location";
 
-import { getMapPreview } from "../../util/location";
+import { getMapPreview, getAddress } from "../../util/location";
 
 import OutlineButton from "../UI/OutlineButton";
 
@@ -11,12 +11,34 @@ import { Colors } from "../../constants/colors";
 
 // Unlike from use camera, when have to permission only for iOS, when use location have to have permission for both devices Android and iOS.
 
-function LocationPicker() {
+function LocationPicker({ onPickLocation }) {
     const [pickedLocation, setPickedLocation] = useState();
+    const isFocusd = useIsFocused();
 
     const navigation = useNavigation();
+    const route = useRoute();
 
     const [locationPermissionInformation, requestPermission] = useForegroundPermissions();
+
+    useEffect(() => {
+        if (isFocusd && route.params) {
+            const mapPickedLocation = {
+                lat: route.params.pickedLat,
+                lng: route.params.pickedLng
+            };
+            setPickedLocation(mapPickedLocation);
+        }
+    }, [route, isFocusd]);
+
+    useEffect(() => {
+        async function handleLocation() {
+            if (pickedLocation) {
+                const address = await getAddress(pickedLocation.lat, pickedLocation.lng);
+                onPickLocation({ ...pickedLocation, address: address });
+            }
+        }
+        handleLocation();
+    }, [pickedLocation, onPickLocation]);
 
     async function verifyPermissions() {
         if (locationPermissionInformation.status === PermissionStatus.UNDETERMINED) {
@@ -92,7 +114,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: Colors.primary100,
         borderRadius: 4,
-        overflow:'hidden'
+        overflow: 'hidden'
     },
     actions: {
         flexDirection: 'row',

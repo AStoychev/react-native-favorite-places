@@ -7,7 +7,7 @@ import OutlineButton from "../UI/OutlineButton";
 
 import { Colors } from "../../constants/colors";
 
-function ImagePicker() {
+function ImagePicker({ onTakeImage }) {
     const [pickedImage, setPickedImage] = useState();
 
     // For iOS
@@ -42,7 +42,8 @@ function ImagePicker() {
             aspect: [16, 9],
             quality: 0.5,
         });
-        setPickedImage(image.assets[0].uri)
+        setPickedImage(image.assets[0].uri);
+        onTakeImage(image.assets[0].uri)
         // setPickedImage(image.uri);
     }
 
